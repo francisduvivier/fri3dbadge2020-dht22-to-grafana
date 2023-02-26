@@ -1,9 +1,10 @@
-# Weekend project: Fri3d Badge 2020 + DHT22 Humidity Sensor + Orange Pi => Grafana Dashboard
+# Weekend Project: Fri3d Badge 2020 + DHT22 Humidity Sensor + Orange Pi 5 => Grafana Dashboard
 
 This repo contains code for a weekend project for using my fri3d badge as an mqtt-connected dht22 sensor that sends data to an orange pi 5 with Orange Pi Os which runs a combination of node red with an mqtt broker and prometheus exporter, prometheus and grafana in docker containers. 
 
 ## Note about Flashing the Fri3d badge
-In order to flash the fri3d badge,you should know that the esp32 first needs to be put into bootloader mode.
+In order to flash the fri3d badge, you should know that the esp32 first needs to be put into bootloader mode.
+
 What works for me to do this is: 
 - I took out the battery
 - turned the on-off switch to on (display switch doesn't matter), 
