@@ -60,3 +60,6 @@ to start the required docker containers, we need to create a directory for nod r
 - https://www.youtube.com/watch?v=cBqV4QWj0lE (Orange Pi 5 First install guide, not completely followed, we just use sd card)
 - https://www.balena.io/etcher
 - https://www.sdcard.org/downloads/formatter/ (formatter advised to be used before flashing image on sd card)
+
+## My Node-RED docker image for this:
+- https://hub.docker.com/r/francisduvivier/node-red-with-mqtt-and-prometheus
