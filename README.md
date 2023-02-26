@@ -16,6 +16,7 @@ Probably it can be simpler than these steps though, but this works as well.
 
 ### Web Flashing.
 - Flashing and arduino development is possible from web with the arduino web editor : https://create.arduino.cc/editor. Notes here:
+  - **Has a limit on the amount of times you can compile in the free version**
   - Requires a plugin to be installed
   - In my case, on linux mint, I also needed to install an extra package
   - Board to select is ESP32 Dev Module
