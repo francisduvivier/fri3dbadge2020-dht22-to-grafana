@@ -3,7 +3,8 @@
 This repo contains code for a weekend project for using my fri3d badge as an mqtt-connected dht22 sensor that sends data to an orange pi 5 with Orange Pi Os which runs a combination of node red with an mqtt broker and prometheus exporter, prometheus and grafana in docker containers. 
 
 ## Note about Flashing the Fri3d badge
-In order to flash the fri3d badge, you should know that the esp32 first needs to be put into bootloader mode.
+### Bootloader mode needs to be activated
+In order to flash the Fri3d badge, you should know that the esp32 first needs to be put into bootloader mode.
 
 What works for me to do this is: 
 - I took out the battery
@@ -11,8 +12,14 @@ What works for me to do this is:
 - held the boot button on the badge while plugging in the usb cable in
 - then pressed the reset button and release the boot button.
 
-Probably it's simpler than these steps though, but this works.
-Flashing and arduino development is possible from web with a plugin: https://create.arduino.cc/editor, or for the fri3d firmware zip files on https://fri3d-flasher.vercel.app/#/.
+Probably it can be simpler than these steps though, but this works as well.
+
+### Web Flashing.
+- Flashing and arduino development is possible from web with the arduino web editor : https://create.arduino.cc/editor
+  - Requires a plugin to be installed
+  - In my case, on linux mint, I also needed to install an extra package
+  - Board to select is ESP32 Dev Module
+- For the Fri3d firmware zip files, you can use https://fri3d-flasher.vercel.app/#/.
 
 Note that to make this work on linux mint I had to change some group stuff for being able to access the dev/ttyUSB0 as non-root.
 Following https://askubuntu.com/questions/133235/how-do-i-allow-non-root-access-to-ttyusb0, I did:
@@ -20,10 +27,15 @@ Following https://askubuntu.com/questions/133235/how-do-i-allow-non-root-access-
 - `reboot`
 on my linux mint development pc
 
+### Other Flashing options
+Flashing via Arduino IDE or Platform IO is of course possible as well.
 
-## Note about Orange pi OS
-Orange PI os looks to be an armbian fork with some tweaks for adding their UI and some extra software. Notably, you can easily install some media server software and a pi hole from the orangepi-config tool.
-And advantage is also that Docker is already preinstalled and working well.
+## Note about Orange Pi OS
+Orange Pi OS looks to be an armbian arm64 fork with some tweaks for adding their UI and some extra software. Notably:
+- you can easily install some media server software and a pi hole from the orangepi-config tool.
+- Docker and docker-compose is already preinstalled and working well.
+- armbian in the commands are renamed with orangepi, so eg `orangepi-config` instead of `armbian-config`, but also `orangepimonitor` instead of `armbianmonitor` etc.
+
 Default username and password there is root: orangepi.
 default hostname is orangepi5
 
