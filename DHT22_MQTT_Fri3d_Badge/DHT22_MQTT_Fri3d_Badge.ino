@@ -2,11 +2,21 @@
 #include <SPI.h>
 #include <ArduinoOTA.h>
 #include "arduino_secrets.h" 
+#include <PubSubClient.h>
+
+#include <AsyncTimer.h>
+AsyncTimer timer;
+
+
+#define MQTT_SERVER "192.168.0.5"
+#define MQTT_SERVERPORT 1883
+#define MSG_BUFFER_SIZE (50)
 
 /////// Wifi Settings ///////
 char ssid[] = SECRET_SSID;      // your network SSID (name)
 char pass[] = SECRET_PASS;   // your network password
 WiFiClient wifiClient;
+PubSubClient client(wifiClient);
 
 int status = WL_IDLE_STATUS;
 
@@ -21,6 +31,12 @@ DHT dht(DHTPIN, DHTTYPE);
 const int16_t SCREEN_WIDTH = 240;
 const int16_t SCREEN_HEIGHT = 240;
 const int16_t BACKGROUND_COLOR = ST77XX_BLACK;
+#define feedPrefix "fri3dbadge1"
+#define concat(first, second) first second
+
+const String mqqt_debug_topic = concat(feedPrefix, "debug");
+
+
 
 void setup(void) {
   Serial.begin(115200);
@@ -35,21 +51,29 @@ void setup(void) {
   // Anything from the Adafruit GFX library can go here, see
   // https://learn.adafruit.com/adafruit-gfx-graphics-library
 
-  tft.fillScreen(BACKGROUND_COLOR);
-
   // check for the presence of the shield:
   setupWifi();
   overWriteExt("setupWifi done", 10, 40);
 
+  setupMQTT();
+  overWriteExt("setupMQTT done", 10, 70);
+
+
   // start the WiFi OTA library with internal (flash) based storage
   setupOTA();
-  overWriteExt("setupOTA done", 10, 70);
 
   // you're connected now, so print out the status:
   printWifiStatus();
+  setupTimer();
 
   tft.fillScreen(BACKGROUND_COLOR);
+  mqttReconnect();
 
+}
+void loop() {
+  reconnectWifi();
+  ArduinoOTA.handle();
+  timer.handle();
 }
 void setupOTA()
 {
@@ -70,17 +94,16 @@ void setupOTA()
   ArduinoOTA.begin();
 }
 
-void loop() {
-    // print your WiFi shield's IP address:
+
+void twoSecondsLoop()
+{
   IPAddress ip = WiFi.localIP();
   Serial.print("IP Address: ");
   Serial.println(ip);
   overWriteExt("IP: ", 0, 5);
   tft.println(ip);
 
-  ArduinoOTA.handle();
   Serial.println("Before DHT Read!");
-  delay(500);
   // Reading temperature or humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
   float h = dht.readHumidity();
@@ -109,10 +132,13 @@ void loop() {
   Serial.println(" *C");
 
 
-  int currY = 30;
+  int currY = 60;
   centerHorizontalOverWriteExt("Humidity(%):", currY, 2, ST77XX_WHITE);
-  currY += 60;
+
+  currY += 30;
   centerHorizontalOverWriteExt(String(h), currY, 8, ST77XX_WHITE);
+  client.publish("fri3dbadge1/dht22/humidity", String(h).c_str());
+
   tft.setTextSize(2);
   currY = 190;
   int currX = 10;
@@ -123,13 +149,15 @@ void loop() {
   overWrite("Temp: ");
   tft.print(t);
   tft.print("C ");
+  client.publish("fri3dbadge1/dht22/temp", String(t).c_str());
+
   currY += 30;
   tft.setCursor(currX, currY);
   overWrite("Heat: ");
   tft.print(hi);
   tft.println("C");
+  
 }
-
 
 // Center text helper methods
 
@@ -208,3 +236,75 @@ void printWifiStatus() {
   tft.print(rssi);
   tft.println(" dBm");
 }
+
+void setupTimer()
+{
+  timer.setInterval([]()
+                    { twoSecondsLoop(); },
+                    2 * 1000);
+  timer.setInterval([]()
+                    { if (!client.connected()){mqttReconnect();} },
+                    5 * 60 * 1000);
+}
+
+void setupMQTT()
+{
+  client.setServer(MQTT_SERVER, MQTT_SERVERPORT);
+  centerHorizontalOverWriteExt("MQTT connecting", 30, 2, ST77XX_YELLOW);
+  mqttReconnect();
+  mqttDebugLog("MQTT connect Done");
+  centerHorizontalOverWriteExt("MQTT connected", 30, 2, ST77XX_YELLOW);
+
+  mqttDebugLog( String(WiFi.localIP()));
+}
+
+void reconnectWifi()
+{
+  // if WiFi is down, try reconnecting
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    Serial.print(millis());
+    Serial.println("Reconnecting to WiFi...");
+    WiFi.disconnect();
+    WiFi.reconnect();
+  }
+}
+void mqttReconnect()
+{
+  // Loop until we're reconnected (max 3 tries)
+  int tries = 0;
+  if(client.connected()){
+          centerHorizontalOverWriteExt("MQTT connected", 30, 2, ST77XX_YELLOW);
+  }else {
+          centerHorizontalOverWriteExt("MQTT not conn", 30, 2, ST77XX_YELLOW);
+  }
+  while (!client.connected() && tries++ < 1)
+  {
+    Serial.print("Attempting MQTT connection...");
+    // Create a random client ID
+    String clientId = "ESP32Client-Fridge";
+    // Attempt to connect
+    if (client.connect(clientId.c_str()))
+    {
+      // Once connected, publish an announcement...
+      mqttDebugLog("connected");
+      centerHorizontalOverWriteExt("MQTT connected", 30, 2, ST77XX_YELLOW);
+    }
+    else
+    {
+      centerHorizontalOverWriteExt("MQTT Fail", 30, 2, ST77XX_YELLOW);
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println("try again in 500 millis");
+      // Wait 5 seconds before retrying
+      delay(500);
+    }
+  }
+}
+
+void mqttDebugLog(String msg)
+{
+  Serial.println(msg);
+  client.publish(mqqt_debug_topic.c_str(), msg.c_str());
+}
+
