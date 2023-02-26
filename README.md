@@ -91,3 +91,6 @@ to start the required docker containers, we need to create a directory for nod r
 
 ## My Node-RED docker image for this:
 - https://hub.docker.com/r/francisduvivier/node-red-with-mqtt-and-prometheus
+
+## Web Arduino And ESP32 simulator: project used for trying out text centering code:
+- https://wokwi.com/projects/357757982958445569
