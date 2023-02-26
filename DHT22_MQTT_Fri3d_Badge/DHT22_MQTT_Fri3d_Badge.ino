@@ -48,6 +48,8 @@ void setup(void) {
   // you're connected now, so print out the status:
   printWifiStatus();
 
+  tft.fillScreen(BACKGROUND_COLOR);
+
 }
 void setupOTA()
 {
@@ -69,9 +71,16 @@ void setupOTA()
 }
 
 void loop() {
+    // print your WiFi shield's IP address:
+  IPAddress ip = WiFi.localIP();
+  Serial.print("IP Address: ");
+  Serial.println(ip);
+  overWriteExt("IP: ", 0, 5);
+  tft.println(ip);
+
   ArduinoOTA.handle();
   Serial.println("Before DHT Read!");
-
+  delay(500);
   // Reading temperature or humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
   float h = dht.readHumidity();
