@@ -27,7 +27,9 @@ And advantage is also that Docker is already preinstalled and working well.
 Default username and password there is root: orangepi.
 default hostname is orangepi5
 
-
+## About Orange Pi docker setup.
+to start the required docker containers, we need to create a directory for nod red data with correct access rights for docker and then run docker-compose up -d. You can do this by running:
+- `./go.sh`
 
 ## Useful related links:
 ### Fri3d Badge
