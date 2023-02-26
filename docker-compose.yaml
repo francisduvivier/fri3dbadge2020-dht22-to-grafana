@@ -8,7 +8,7 @@ version: "3.7"
 
 services:
   node-red:
-    image: nodered/node-red:latest
+    image: francisduvivier/node-red-with-mqtt-and-prometheus:latest
     environment:
       - TZ=Europe/Amsterdam
     ports:
