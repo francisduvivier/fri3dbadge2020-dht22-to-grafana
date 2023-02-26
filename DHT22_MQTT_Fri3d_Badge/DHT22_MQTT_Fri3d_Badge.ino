@@ -1,5 +1,14 @@
 #include <WiFi.h>
+#include <SPI.h>
 #include <ArduinoOTA.h>
+#include "arduino_secrets.h" 
+
+/////// Wifi Settings ///////
+char ssid[] = SECRET_SSID;      // your network SSID (name)
+char pass[] = SECRET_PASS;   // your network password
+WiFiClient wifiClient;
+
+int status = WL_IDLE_STATUS;
 
 #include <Badge2020_TFT.h>
 
@@ -19,16 +28,49 @@ void setup(void) {
   tft.init(SCREEN_WIDTH, SCREEN_HEIGHT);
   tft.setRotation( 2 );
   dht.begin();
+  tft.setTextColor(ST77XX_YELLOW);
+  tft.setTextSize(2);
+  overWriteExt("dht.begin() done", 10, 10);
 
   // Anything from the Adafruit GFX library can go here, see
   // https://learn.adafruit.com/adafruit-gfx-graphics-library
 
   tft.fillScreen(BACKGROUND_COLOR);
+
+  // check for the presence of the shield:
+  setupWifi();
+  overWriteExt("setupWifi done", 10, 40);
+
+  // start the WiFi OTA library with internal (flash) based storage
+  setupOTA();
+  overWriteExt("setupOTA done", 10, 70);
+
+  // you're connected now, so print out the status:
+  printWifiStatus();
+
+}
+void setupOTA()
+{
+  ArduinoOTA.onStart([]()
+                     { Serial.println("ArduinoOTA Start"); });
+  ArduinoOTA.onEnd([]()
+                   { Serial.println("\nArduinoOTA End"); });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total)
+                        { Serial.printf("ArduinoOTA Progress: %u%%\r", (progress / (total / 100))); });
+  ArduinoOTA.onError([](ota_error_t error)
+                     {
+    Serial.printf("ArduinoOTA Error[%u]: ", error);
+    if (error == OTA_AUTH_ERROR) Serial.println("ArduinoOTA Auth Failed");
+    else if (error == OTA_BEGIN_ERROR) Serial.println("ArduinoOTA Begin Failed");
+    else if (error == OTA_CONNECT_ERROR) Serial.println("ArduinoOTA Connect Failed");
+    else if (error == OTA_RECEIVE_ERROR) Serial.println("ArduinoOTA Receive Failed");
+    else if (error == OTA_END_ERROR) Serial.println("ArduinoOTA End Failed"); });
+  ArduinoOTA.begin();
 }
 
 void loop() {
-  delay(2000);
-  Serial.println("Before DHT READ!");
+  ArduinoOTA.handle();
+  Serial.println("Before DHT Read!");
 
   // Reading temperature or humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
@@ -117,4 +159,43 @@ void overWrite(const String &buf) {
   tft.getTextBounds(buf, 0, 0, &x1, &y1, &size[0], &size[1]); //calc width of new string
   tft.fillRect (0, tft.getCursorY(), SCREEN_WIDTH, size[1], BACKGROUND_COLOR);
   tft.print(buf);
+}
+
+
+
+void setupWifi()
+{
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, pass);
+
+  if (WiFi.waitForConnectResult() != WL_CONNECTED)
+  {
+    Serial.println("Connection Failed! No OTA Possible...");
+    overWriteExt("Connection Failed! No OTA Possible...",10, 210);
+    return;
+  }
+}
+
+
+void printWifiStatus() {
+  // print the SSID of the network you're attached to:
+  Serial.print("SSID: ");
+  Serial.println(WiFi.SSID());
+  overWriteExt("SSID: ", 10, 100);
+  tft.println(WiFi.SSID());
+  // print your WiFi shield's IP address:
+  IPAddress ip = WiFi.localIP();
+  Serial.print("IP Address: ");
+  Serial.println(ip);
+  overWriteExt("IP Address: ", 10, 130);
+  tft.println(ip);
+
+  // print the received signal strength:
+  long rssi = WiFi.RSSI();
+  Serial.print("signal strength (RSSI):");
+  Serial.print(rssi);
+  Serial.println(" dBm");
+  overWriteExt("signal strength (RSSI):", 10, 170);
+  tft.print(rssi);
+  tft.println(" dBm");
 }
