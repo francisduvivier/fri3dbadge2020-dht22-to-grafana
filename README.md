@@ -14,14 +14,18 @@ What works for me to do this is:
 
 Probably it can be simpler than these steps though, but this works as well.
 
-### Web Flashing.
-- Flashing and arduino development is possible from web with the arduino web editor : https://create.arduino.cc/editor. Notes here:
-  - **Has a limit on the amount of times you can compile in the free version**
-  - Requires a plugin to be installed
-  - In my case, on linux mint, I also needed to install an extra package
-  - Board to select is ESP32 Dev Module
-  - The web interface actually just runs stuff on the host pc via the plugin, so also allows to load local library files, so we can zip and load the Fri3d Badge 2020 Arduino Library zip. https://github.com/Fri3dCamp/Badge2020_arduino/archive/refs/heads/main.zip library.
-- For the Fri3d firmware zip files, you can use https://fri3d-flasher.vercel.app/#/.
+
+
+### Arduino IDE Setup for development and flashing
+To get the arduino ide working for this project I had to:
+- Add the ESP32 board manager url
+- install the ESP boards
+- Install Adafruit GFX Library
+- Install Adafruit's DHT Sensor Library
+- Install Display library: https://github.com/adafruit/Adafruit-ST7735-Library
+- Then select ESP32 Dev Module as the board
+- Then select the upload port 
+- Then flash after putting the device in bootloader mode.
 
 Note that to make this work on linux mint I had to change some group stuff for being able to access the dev/ttyUSB0 as non-root.
 Following https://askubuntu.com/questions/133235/how-do-i-allow-non-root-access-to-ttyusb0, I did:
@@ -29,8 +33,18 @@ Following https://askubuntu.com/questions/133235/how-do-i-allow-non-root-access-
 - `reboot`
 on my linux mint development pc
 
-### Other Flashing options
-Flashing via Arduino IDE or Platform IO is of course possible as well.
+
+
+### Notes regarding Web Flashing options 
+### Conclusion: not really usable for development
+- Flashing and arduino development is possible from web with the arduino web editor : https://create.arduino.cc/editor. Notes here:
+  - **Has a limit on the amount of times you can compile in the free version**
+  - Requires a plugin to be installed
+  - In my case, on linux mint, I also needed to install an extra package
+  - Board to select is ESP32 Dev Module
+  - The web interface runs stuff on the host pc via the plugin, and also allows to load zipped library files in the cloud compilation environment, so we can zip and load the Fri3d Badge 2020 Arduino Library zip. https://github.com/Fri3dCamp/Badge2020_arduino/archive/refs/heads/main.zip library.
+- For the Fri3d firmware zip files, you can use https://fri3d-flasher.vercel.app/#/.
+
 
 ## Note about Orange Pi OS
 Orange Pi OS looks to be an armbian arm64 fork with some tweaks for adding their UI and some extra software. Notably:
