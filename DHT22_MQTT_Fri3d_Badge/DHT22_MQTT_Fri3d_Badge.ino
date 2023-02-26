@@ -1,3 +1,6 @@
+#include <WiFi.h>
+#include <ArduinoOTA.h>
+
 #include <Badge2020_TFT.h>
 
 Badge2020_TFT tft;
