@@ -12,6 +12,14 @@ What works for me to do this is:
 - then pressed the reset button and release the boot button.
 
 Probably it's simpler than these steps though, but this works.
+Flashing and arduino development is possible from web with a plugin: https://create.arduino.cc/editor, or for the fri3d firmware zip files on https://fri3d-flasher.vercel.app/#/.
+
+Note that to make this work on linux mint I had to change some group stuff for being able to access the dev/ttyUSB0 as non-root.
+Following https://askubuntu.com/questions/133235/how-do-i-allow-non-root-access-to-ttyusb0, I did:
+- `sudo usermod -a -G dialout $USER`
+- `reboot`
+on my linux mint development pc
+
 
 ## Note about Orange pi OS
 Orange PI os looks to be an armbian fork with some tweaks for adding their UI and some extra software. Notably, you can easily install some media server software and a pi hole from the orangepi-config tool.
@@ -30,6 +38,9 @@ default hostname is orangepi5
 - https://hackaday.io/project/169741-fri3d-2022-badge
 - https://docs.espressif.com/projects/esptool/en/latest/esp32/advanced-topics/boot-mode-selection.html
 - https://www.esp32.com/viewtopic.php?t=5682#p24710
+- https://create.arduino.cc/editor
+- https://askubuntu.com/questions/133235/how-do-i-allow-non-root-access-to-ttyusb0
+
 ### Node-RED + Plugins + Docker + Prometheus + Grafana
 - https://nodered.org/docs/getting-started/docker
 - https://flows.nodered.org/node/node-red-contrib-aedes (MQTT Broker for node red)
@@ -39,6 +50,7 @@ default hostname is orangepi5
 - https://prometheus.io/
 - https://grafana.com/
 - https://www.catchpoint.com/blog/node-red-influxdb-grafana (Similar project)
+
 ### Orange Pi 5 with Orange Pi OS
 - http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5.html
 - https://drive.google.com/drive/folders/1YxOLUAunufM6NzAfeEmt5tUnAFOu5bdA (Orange Pi OS drive)
