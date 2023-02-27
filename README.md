@@ -19,7 +19,7 @@ What works for me to do this is:
 Probably it can be simpler than these steps though, but this works as well.
 
 ### Arduino IDE setup for development and flashing
-To get the arduino ide working for this project I had to:
+To get the Arduino Ide working for reading and showing DHT values on the  Fri3d Badge, the following steps were done:
 - Add the ESP32 board manager url
 - install the ESP boards
 - Install Adafruit GFX Library
@@ -28,6 +28,11 @@ To get the arduino ide working for this project I had to:
 - Then select ESP32 Dev Module as the board
 - Then select the upload port 
 - Then flash after putting the device in bootloader mode.
+Then for the mqtt, ota, wifi and async event code I added some more libraries:
+- knolleary/PubSubClient@^2.8
+- aasim-a/AsyncTimer@^2.4.0
+- ArduinoOTA
+
 
 Note that to make this work on linux mint I had to change some group stuff for being able to access the dev/ttyUSB0 as non-root.
 Following https://askubuntu.com/questions/133235/how-do-i-allow-non-root-access-to-ttyusb0, I did:
@@ -75,6 +80,7 @@ to start the required Docker containers, we need to create some directories for 
 - Include Grafana Config in new Docker image or mounted files in deployment
 - Add Wiring diagram
 - Make project Simulatable in WokWi (de display is an issue here)
+- Test Arduino OTA updates
 
 ## Useful related links:
 ### Fri3d Badge
