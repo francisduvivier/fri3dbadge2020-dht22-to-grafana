@@ -1,7 +1,14 @@
 # Weekend Project: Fri3d Badge 2020 + DHT22 Humidity Sensor + Orange Pi 5 => Grafana Dashboard
 
 This repo contains code for a weekend project for using my fri3d badge as an mqtt-connected dht22 sensor that sends data to an orange pi 5 with Orange Pi Os which runs a combination of node red with an mqtt broker and prometheus exporter, prometheus and grafana in docker containers. 
+## Result
+### Grafana Dashboard with whole backend on Orange Pi 5
 
+### 
+
+Grafana Dashboard running from containers on Orange Pi 5 |  Badge showing DHT22 readings:
+-------------------------:|:-------------------------:
+![Front Of Fri3d badge showing humidity, temperature and wifi and mqtt connection](doc/res/fri3dbadgedashboard.png) |  ![Front Of Fri3d badge showing humidity, temperature and wifi and mqtt connection](doc/res/fri3d-dht22-badge-front.png)
 ## Note about Flashing the Fri3d badge
 ### Bootloader mode needs to be activated
 In order to flash the Fri3d badge, you should know that the esp32 first needs to be put into bootloader mode.
@@ -59,6 +66,8 @@ default hostname is orangepi5
 to start the required docker containers, we need to create a directory for nod red data with correct access rights for docker and then run docker-compose up -d. You can do this by running:
 - `./go.sh`
 
+## Hardware: Back of Badge Picture with soldered wires
+![Back of Fri3d badge showing soldered wires for dht22 connection](doc/res/fri3d-dht22-badge-back.png)
 ## Useful related links:
 ### Fri3d Badge
 - https://github.com/Fri3dCamp/badge-2020
@@ -94,3 +103,6 @@ to start the required docker containers, we need to create a directory for nod r
 
 ## Web Arduino And ESP32 simulator: project used for trying out text centering code:
 - https://wokwi.com/projects/357757982958445569
+
+## DHT22 Temperature and Humidity sensor
+- https://lastminuteengineers.com/dht11-dht22-arduino-tutorial/
