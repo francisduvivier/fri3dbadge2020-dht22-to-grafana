@@ -137,7 +137,7 @@ void twoSecondsLoop()
 
   currY += 30;
   centerHorizontalOverWriteExt(String(h), currY, 8, ST77XX_WHITE);
-  client.publish("fri3dbadge1/dht22/humidity", String(h).c_str());
+  client.publish(String("fri3dbadge1/dht22/humidity").c_str(), String(h).c_str());
 
   tft.setTextSize(2);
   currY = 190;
@@ -250,8 +250,12 @@ void setupTimer()
 void setupMQTT()
 {
   client.setServer(MQTT_SERVER, MQTT_SERVERPORT);
+  client.setCallback(callback);
+
   centerHorizontalOverWriteExt("MQTT connecting", 30, 2, ST77XX_YELLOW);
   mqttReconnect();
+  client.publish("fri3dbadge1/status", "trying to say hi");
+
   mqttDebugLog("MQTT connect Done");
   centerHorizontalOverWriteExt("MQTT connected", 30, 2, ST77XX_YELLOW);
 
@@ -282,7 +286,7 @@ void mqttReconnect()
   {
     Serial.print("Attempting MQTT connection...");
     // Create a random client ID
-    String clientId = "ESP32Client-Fridge";
+    String clientId = "ESP32Client-Fri3d-Badge";
     // Attempt to connect
     if (client.connect(clientId.c_str()))
     {
@@ -304,7 +308,19 @@ void mqttReconnect()
 
 void mqttDebugLog(String msg)
 {
+  Serial.print("mqttDebugLog: ");
   Serial.println(msg);
   client.publish(mqqt_debug_topic.c_str(), msg.c_str());
 }
 
+
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  for (int i=0;i<length;i++) {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
+}
