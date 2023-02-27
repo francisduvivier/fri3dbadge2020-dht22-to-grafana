@@ -37,7 +37,14 @@ Following https://askubuntu.com/questions/133235/how-do-i-allow-non-root-access-
 - `reboot`
 on my linux mint development pc
 
-
+## TODO
+- Make it more efficient to add and extra device or an extra sensor
+- Improve documentation regarding node-red config and prometheus config
+- Include Node-Red Config in docker image or deployment
+- Include Prometheus Config in new docker image or deployment
+- Add Wiring diagram
+- Clean up Code
+- Make project Simulatable in WokWi (de display is an issue here)
 
 ### Notes regarding Web Flashing options 
 ### Conclusion: not really usable for development
