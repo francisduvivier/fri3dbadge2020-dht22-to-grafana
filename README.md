@@ -1,6 +1,6 @@
 # Weekend Project: Fri3d Badge 2020 + DHT22 Humidity Sensor + Orange Pi 5 => Grafana Dashboard
 
-This repo contains code for a weekend project for using my fri3d badge as an mqtt-connected dht22 sensor that sends data to an orange pi 5 with Orange Pi Os which runs a combination of node red with an mqtt broker and prometheus exporter, prometheus and grafana in docker containers. 
+This repo contains code for a weekend project for using my fri3d badge as an mqtt-connected dht22 sensor that sends data to an Orange Pi 5 with Orange Pi Os which runs a combination of Node-RED with an MQTT Broker and a Prometheus exporter, Prometheus and Grafana in Docker containers. 
 ## Result pictures 
 
 Grafana Dashboard running from Docker containers on Orange Pi 5 |  Badge showing DHT22 readings:
@@ -36,14 +36,18 @@ Following https://askubuntu.com/questions/133235/how-do-i-allow-non-root-access-
 on my linux mint development pc
 
 ### Notes regarding Web Flashing options 
-### Conclusion: not really usable for development
-- Flashing and arduino development is possible from web with the arduino web editor : https://create.arduino.cc/editor. Notes here:
+#### Arduino Web Editor
+- **Conclusion: not really usable for development! See below**
+- Flashing and arduino development is possible from web with the Arduino Web Editor : https://create.arduino.cc/editor. Notes here:
   - **Has a limit on the amount of times you can compile in the free version**
   - Requires a plugin to be installed
   - In my case, on linux mint, I also needed to install an extra package
   - Board to select is ESP32 Dev Module
   - The web interface runs stuff on the host pc via the plugin, and also allows to load zipped library files in the cloud compilation environment, so we can zip and load the Fri3d Badge 2020 Arduino Library zip. https://github.com/Fri3dCamp/Badge2020_arduino/archive/refs/heads/main.zip library.
-- For the Fri3d firmware zip files, you can use https://fri3d-flasher.vercel.app/#/.
+
+#### Fried Flasher
+- For the Fri3d firmware zip files, you can use https://fri3d-flasher.vercel.app/#/
+- This might be useful if you want to go back to original firmware, or just wanna try that flashing works.
 
 
 ## Notes regarding Orange Pi OS
@@ -55,20 +59,21 @@ Orange Pi OS looks to be an armbian arm64 fork with some tweaks for adding their
 Default username and password is `root`: `orangepi`.
 default hostname is orangepi5
 
-## About Orange Pi docker setup
-to start the required docker containers, we need to create a directory for nod red data with correct access rights for docker and then run docker-compose up -d. You can do this by running:
+## About Orange Pi Docker setup
+to start the required Docker containers, we need to create some directories for Node-RED, Prometheus and Grafana data with correct access rights for Docker and then starting the containers with docker-compose. You can do this by running:
 - `./go.sh`
 
-## Hardware: Back of Badge Picture with soldered wires
+## Hardware
+### Back of Badge Picture with soldered wires
 ![Back of Fri3d badge showing soldered wires for dht22 connection](doc/res/fri3d-dht22-badge-back.png)
 
 ## TODO
+- Clean up Arduino Code
 - Make it more efficient to add and extra device or an extra sensor
-- Improve documentation regarding node-red config and prometheus config
-- Include Node-Red Config in docker image or deployment
-- Include Prometheus Config in new docker image or deployment
+- Improve documentation regarding Node-RED and Grafana configuration after deployment   
+- Include Node-Red Config in Docker image or mounted files in deployment
+- Include Grafana Config in new Docker image or mounted files in deployment
 - Add Wiring diagram
-- Clean up Code
 - Make project Simulatable in WokWi (de display is an issue here)
 
 ## Useful related links:
@@ -85,7 +90,7 @@ to start the required docker containers, we need to create a directory for nod r
 
 ### Node-RED + Plugins + Docker + Prometheus + Grafana
 - https://nodered.org/docs/getting-started/docker
-- https://flows.nodered.org/node/node-red-contrib-aedes (MQTT Broker for node red)
+- https://flows.nodered.org/node/node-red-contrib-aedes (MQTT Broker for Node-RED)
   - https://github.com/martin-doyle/node-red-contrib-aedes/tree/v0.8.2
 - https://flows.nodered.org/node/node-red-contrib-prometheus-exporter
   - https://github.com/Docoyo/node-red-contrib-prometheus-exporter/tree/1.0.5
