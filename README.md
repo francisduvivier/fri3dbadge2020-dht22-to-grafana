@@ -3,9 +3,9 @@
 This repo contains code for a weekend project for using my fri3d badge as an mqtt-connected dht22 sensor that sends data to an orange pi 5 with Orange Pi Os which runs a combination of node red with an mqtt broker and prometheus exporter, prometheus and grafana in docker containers. 
 ## Result Pictures 
 
-Grafana Dashboard running from containers on Orange Pi 5 |  Badge showing DHT22 readings:
+Grafana Dashboard running from Docker containers on Orange Pi 5 |  Badge showing DHT22 readings:
 -------------------------:|:-------------------------:
-![Front Of Fri3d badge showing humidity, temperature and wifi and mqtt connection](doc/res/fri3dbadgedashboard.png) |  ![Front Of Fri3d badge showing humidity, temperature and wifi and mqtt connection](doc/res/fri3d-dht22-badge-front.png)
+![Front Of Fri3d badge showing humidity, temperature and wifi and mqtt connection](doc/res/fri3d-dht22-badge-grafana-dashboard-pretty.png) |  ![Front Of Fri3d badge showing humidity, temperature and wifi and mqtt connection](doc/res/fri3d-dht22-badge-front.png)
 ## Note about Flashing the Fri3d badge
 ### Bootloader mode needs to be activated
 In order to flash the Fri3d badge, you should know that the esp32 first needs to be put into bootloader mode.
