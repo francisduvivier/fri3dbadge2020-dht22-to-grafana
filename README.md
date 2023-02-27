@@ -1,10 +1,7 @@
 # Weekend Project: Fri3d Badge 2020 + DHT22 Humidity Sensor + Orange Pi 5 => Grafana Dashboard
 
 This repo contains code for a weekend project for using my fri3d badge as an mqtt-connected dht22 sensor that sends data to an orange pi 5 with Orange Pi Os which runs a combination of node red with an mqtt broker and prometheus exporter, prometheus and grafana in docker containers. 
-## Result
-### Grafana Dashboard with whole backend on Orange Pi 5
-
-### 
+## Result Pictures 
 
 Grafana Dashboard running from containers on Orange Pi 5 |  Badge showing DHT22 readings:
 -------------------------:|:-------------------------:
