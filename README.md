@@ -1,12 +1,12 @@
 # Weekend Project: Fri3d Badge 2020 + DHT22 Humidity Sensor + Orange Pi 5 => Grafana Dashboard
 
 This repo contains code for a weekend project for using my fri3d badge as an mqtt-connected dht22 sensor that sends data to an orange pi 5 with Orange Pi Os which runs a combination of node red with an mqtt broker and prometheus exporter, prometheus and grafana in docker containers. 
-## Result Pictures 
+## Result pictures 
 
 Grafana Dashboard running from Docker containers on Orange Pi 5 |  Badge showing DHT22 readings:
 -------------------------:|:-------------------------:
 ![Front Of Fri3d badge showing humidity, temperature and wifi and mqtt connection](doc/res/fri3d-dht22-badge-grafana-dashboard-pretty.png) |  ![Front Of Fri3d badge showing humidity, temperature and wifi and mqtt connection](doc/res/fri3d-dht22-badge-front.png)
-## Note about Flashing the Fri3d badge
+## Notes about Flashing the Fri3d badge
 ### Bootloader mode needs to be activated
 In order to flash the Fri3d badge, you should know that the esp32 first needs to be put into bootloader mode.
 
@@ -18,9 +18,7 @@ What works for me to do this is:
 
 Probably it can be simpler than these steps though, but this works as well.
 
-
-
-### Arduino IDE Setup for development and flashing
+### Arduino IDE setup for development and flashing
 To get the arduino ide working for this project I had to:
 - Add the ESP32 board manager url
 - install the ESP boards
@@ -37,15 +35,6 @@ Following https://askubuntu.com/questions/133235/how-do-i-allow-non-root-access-
 - `reboot`
 on my linux mint development pc
 
-## TODO
-- Make it more efficient to add and extra device or an extra sensor
-- Improve documentation regarding node-red config and prometheus config
-- Include Node-Red Config in docker image or deployment
-- Include Prometheus Config in new docker image or deployment
-- Add Wiring diagram
-- Clean up Code
-- Make project Simulatable in WokWi (de display is an issue here)
-
 ### Notes regarding Web Flashing options 
 ### Conclusion: not really usable for development
 - Flashing and arduino development is possible from web with the arduino web editor : https://create.arduino.cc/editor. Notes here:
@@ -57,21 +46,31 @@ on my linux mint development pc
 - For the Fri3d firmware zip files, you can use https://fri3d-flasher.vercel.app/#/.
 
 
-## Note about Orange Pi OS
+## Notes regarding Orange Pi OS
 Orange Pi OS looks to be an armbian arm64 fork with some tweaks for adding their UI and some extra software. Notably:
-- you can easily install some media server software and a pi hole from the orangepi-config tool.
-- Docker and docker-compose is already preinstalled and working well.
-- armbian in the commands are renamed with orangepi, so eg `orangepi-config` instead of `armbian-config`, but also `orangepimonitor` instead of `armbianmonitor` etc.
+- You can easily install some media server software and a pi hole from the orangepi-config tool
+- Docker and docker-compose is already preinstalled and working well
+- `armbian` in the commands are renamed to `orangepi`, so eg `orangepi-config` instead of `armbian-config`, but also `orangepimonitor` instead of `armbianmonitor` etc.
 
-Default username and password there is root: orangepi.
+Default username and password is `root`: `orangepi`.
 default hostname is orangepi5
 
-## About Orange Pi docker setup.
+## About Orange Pi docker setup
 to start the required docker containers, we need to create a directory for nod red data with correct access rights for docker and then run docker-compose up -d. You can do this by running:
 - `./go.sh`
 
 ## Hardware: Back of Badge Picture with soldered wires
 ![Back of Fri3d badge showing soldered wires for dht22 connection](doc/res/fri3d-dht22-badge-back.png)
+
+## TODO
+- Make it more efficient to add and extra device or an extra sensor
+- Improve documentation regarding node-red config and prometheus config
+- Include Node-Red Config in docker image or deployment
+- Include Prometheus Config in new docker image or deployment
+- Add Wiring diagram
+- Clean up Code
+- Make project Simulatable in WokWi (de display is an issue here)
+
 ## Useful related links:
 ### Fri3d Badge
 - https://github.com/Fri3dCamp/badge-2020
