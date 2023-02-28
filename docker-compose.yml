@@ -10,6 +10,7 @@ services:
   node-red:
     image: francisduvivier/node-red-with-mqtt-and-prometheus:latest
     container_name: node-red
+    restart: unless-stopped
     environment:
       - TZ=Europe/Amsterdam
     ports:

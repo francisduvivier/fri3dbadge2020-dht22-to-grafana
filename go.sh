@@ -1,3 +1,4 @@
+systemctl enable docker
 mkdir /root/node-red-data -p 
 chmod 777 /root/node-red-data
 mkdir /root/prometheus_data -p
