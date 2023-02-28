@@ -1,0 +1,230 @@
+[
+    {
+        "id": "c3e62358e12884a2",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "07bdf2c3305a2f68",
+        "type": "prometheus-metric-config",
+        "name": "fri3dbadge1dht22humidity",
+        "help": "humidity measured by dht22 on my fri3d badge",
+        "labels": "",
+        "mtype": "gauge"
+    },
+    {
+        "id": "6ecc8ad4405b8f1c",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "node-red/mqtt1/connected",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "node-red/mqtt1/disconnecting",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "node-red/mqtt1/unexpectedDisconnect",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "1bec096f675a8a6a",
+        "type": "prometheus-metric-config",
+        "name": "fri3dbadge1dht22temp",
+        "help": "fri3d/badge1/dht22/temp",
+        "labels": "",
+        "mtype": "gauge"
+    },
+    {
+        "id": "84c9785676d279f5",
+        "type": "prometheus-exporter",
+        "z": "c3e62358e12884a2",
+        "name": "Prometheus Out Humidity",
+        "metric": "07bdf2c3305a2f68",
+        "x": 650,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "5697e781d3f96b1d",
+        "type": "mqtt in",
+        "z": "c3e62358e12884a2",
+        "name": "fri3dbadge1/dht22/humidity",
+        "topic": "fri3dbadge1/dht22/humidity",
+        "qos": "2",
+        "datatype": "utf8",
+        "broker": "6ecc8ad4405b8f1c",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 190,
+        "y": 140,
+        "wires": [
+            [
+                "902c7998f218ec81"
+            ]
+        ]
+    },
+    {
+        "id": "c31fc7884a92ec04",
+        "type": "aedes broker",
+        "z": "c3e62358e12884a2",
+        "name": "",
+        "mqtt_port": 1883,
+        "mqtt_ws_bind": "port",
+        "mqtt_ws_port": "",
+        "mqtt_ws_path": "",
+        "cert": "",
+        "key": "",
+        "certname": "",
+        "keyname": "",
+        "dburl": "",
+        "usetls": false,
+        "x": 170,
+        "y": 260,
+        "wires": [
+            [
+                "212467835cef59ce"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "902c7998f218ec81",
+        "type": "function",
+        "z": "c3e62358e12884a2",
+        "name": "function 1",
+        "func": "return {payload:{\n    \"op\": \"set\",\n    \"val\": msg.payload\n}}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 140,
+        "wires": [
+            [
+                "84c9785676d279f5",
+                "708a244ed5b7d634"
+            ]
+        ]
+    },
+    {
+        "id": "212467835cef59ce",
+        "type": "debug",
+        "z": "c3e62358e12884a2",
+        "name": "debug 1",
+        "active": false,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": true,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 410,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "708a244ed5b7d634",
+        "type": "debug",
+        "z": "c3e62358e12884a2",
+        "name": "debug 2",
+        "active": false,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 590,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "ac443dbe84a2d803",
+        "type": "prometheus-exporter",
+        "z": "c3e62358e12884a2",
+        "name": "Prometheus Out Temp",
+        "metric": "1bec096f675a8a6a",
+        "x": 640,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "1b078bda75c5360e",
+        "type": "mqtt in",
+        "z": "c3e62358e12884a2",
+        "name": "fri3dbadge1/dht22/temp",
+        "topic": "fri3dbadge1/dht22/temp",
+        "qos": "2",
+        "datatype": "utf8",
+        "broker": "6ecc8ad4405b8f1c",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 100,
+        "wires": [
+            [
+                "449784293a1d5465"
+            ]
+        ]
+    },
+    {
+        "id": "449784293a1d5465",
+        "type": "function",
+        "z": "c3e62358e12884a2",
+        "name": "function 2",
+        "func": "return {payload:{\n    \"op\": \"set\",\n    \"val\": msg.payload\n}}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 100,
+        "wires": [
+            [
+                "ac443dbe84a2d803",
+                "5a626130389822fd"
+            ]
+        ]
+    },
+    {
+        "id": "5a626130389822fd",
+        "type": "debug",
+        "z": "c3e62358e12884a2",
+        "name": "debug 3",
+        "active": false,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 570,
+        "y": 40,
+        "wires": []
+    }
+]
