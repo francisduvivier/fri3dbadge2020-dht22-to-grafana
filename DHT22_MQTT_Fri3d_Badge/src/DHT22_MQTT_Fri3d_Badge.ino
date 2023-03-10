@@ -3,26 +3,25 @@
 #include <ArduinoOTA.h>
 #include "arduino_secrets.h"
 #include <PubSubClient.h>
-
 #include <AsyncTimer.h>
-AsyncTimer timer;
+#include <Badge2020_TFT.h>
+#include "DHT.h"
 
 #define MQTT_SERVER "192.168.0.5"
 #define MQTT_SERVERPORT 1883
 #define MSG_BUFFER_SIZE (50)
 
-/////// Wifi Settings ///////
+AsyncTimer timer;
+// Wifi Settings
 char ssid[] = SECRET_SSID; // your network SSID (name)
 char pass[] = SECRET_PASS; // your network password
 WiFiClient wifiClient;
+
 PubSubClient client(wifiClient);
 
 int status = WL_IDLE_STATUS;
 
-#include <Badge2020_TFT.h>
-
 Badge2020_TFT tft;
-#include "DHT.h"
 
 #define DHT_PIN 27     // what pin we're connected to
 #define DHT_TYPE DHT22 // DHT 22  (AM2302)
@@ -30,7 +29,7 @@ DHT dht(DHT_PIN, DHT_TYPE);
 const int16_t SCREEN_WIDTH = 240;
 const int16_t SCREEN_HEIGHT = 240;
 const int16_t BACKGROUND_COLOR = ST77XX_BLACK;
-#define feedPrefix "fri3dbadge1"
+#define feedPrefix "fri3dbadge_fd"
 #define concat(first, second) first second
 #define IR_PIN 25
 const String mqqt_debug_topic = concat(feedPrefix, "debug");
@@ -38,33 +37,15 @@ const String mqqt_debug_topic = concat(feedPrefix, "debug");
 void setup(void)
 {
   Serial.begin(115200);
-  Serial.println("DHTxx test!");
-  tft.init(SCREEN_WIDTH, SCREEN_HEIGHT);
-  tft.setRotation(2);
-  dht.begin();
-  tft.setTextColor(ST77XX_YELLOW);
-  tft.setTextSize(2);
-  overWriteExt("dht.begin() done", 10, 10);
-
-  // Anything from the Adafruit GFX library can go here, see
-  // https://learn.adafruit.com/adafruit-gfx-graphics-library
-
-  // check for the presence of the shield:
+  setupTFT();
+  setupDHT();
   setupWifi();
-  overWriteExt("setupWifi done", 10, 40);
-
   setupMQTT();
-  overWriteExt("setupMQTT done", 10, 70);
-
-  // start the WiFi OTA library with internal (flash) based storage
   setupOTA();
-
-  // you're connected now, so print out the status:
   printWifiStatus();
   setupTimer();
 
   tft.fillScreen(BACKGROUND_COLOR);
-  mqttReconnect();
 }
 void loop()
 {
@@ -72,6 +53,22 @@ void loop()
   ArduinoOTA.handle();
   timer.handle();
 }
+void setupTFT()
+{
+  Serial.println("START setupTFT!");
+  tft.init(SCREEN_WIDTH, SCREEN_HEIGHT);
+  tft.setRotation(2);
+  tft.setTextColor(ST77XX_YELLOW);
+  tft.setTextSize(2);
+  Serial.println("END setupTFT!");
+}
+void setupDHT()
+{
+  Serial.println("START setupDHT!");
+  dht.begin();
+  Serial.println("END setupDHT!");
+}
+
 void setupOTA()
 {
   ArduinoOTA.onStart([]()
@@ -257,7 +254,6 @@ void setupMQTT()
 
   mqttDebugLog("MQTT connect Done");
   centerHorizontalOverWriteExt("MQTT connected", 30, 2, ST77XX_YELLOW);
-
   mqttDebugLog(String(WiFi.localIP()));
 }
 
