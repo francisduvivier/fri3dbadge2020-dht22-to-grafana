@@ -1,20 +1,19 @@
 #include <WiFi.h>
 #include <SPI.h>
 #include <ArduinoOTA.h>
-#include "arduino_secrets.h" 
+#include "arduino_secrets.h"
 #include <PubSubClient.h>
 
 #include <AsyncTimer.h>
 AsyncTimer timer;
-
 
 #define MQTT_SERVER "192.168.0.5"
 #define MQTT_SERVERPORT 1883
 #define MSG_BUFFER_SIZE (50)
 
 /////// Wifi Settings ///////
-char ssid[] = SECRET_SSID;      // your network SSID (name)
-char pass[] = SECRET_PASS;   // your network password
+char ssid[] = SECRET_SSID; // your network SSID (name)
+char pass[] = SECRET_PASS; // your network password
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
 
@@ -25,24 +24,23 @@ int status = WL_IDLE_STATUS;
 Badge2020_TFT tft;
 #include "DHT.h"
 
-#define DHTPIN 27   // what pin we're connected to
-#define DHTTYPE DHT22   // DHT 22  (AM2302)
-DHT dht(DHTPIN, DHTTYPE);
+#define DHT_PIN 27     // what pin we're connected to
+#define DHT_TYPE DHT22 // DHT 22  (AM2302)
+DHT dht(DHT_PIN, DHT_TYPE);
 const int16_t SCREEN_WIDTH = 240;
 const int16_t SCREEN_HEIGHT = 240;
 const int16_t BACKGROUND_COLOR = ST77XX_BLACK;
 #define feedPrefix "fri3dbadge1"
 #define concat(first, second) first second
-
+#define IR_PIN 25
 const String mqqt_debug_topic = concat(feedPrefix, "debug");
 
-
-
-void setup(void) {
+void setup(void)
+{
   Serial.begin(115200);
   Serial.println("DHTxx test!");
   tft.init(SCREEN_WIDTH, SCREEN_HEIGHT);
-  tft.setRotation( 2 );
+  tft.setRotation(2);
   dht.begin();
   tft.setTextColor(ST77XX_YELLOW);
   tft.setTextSize(2);
@@ -58,7 +56,6 @@ void setup(void) {
   setupMQTT();
   overWriteExt("setupMQTT done", 10, 70);
 
-
   // start the WiFi OTA library with internal (flash) based storage
   setupOTA();
 
@@ -68,9 +65,9 @@ void setup(void) {
 
   tft.fillScreen(BACKGROUND_COLOR);
   mqttReconnect();
-
 }
-void loop() {
+void loop()
+{
   reconnectWifi();
   ArduinoOTA.handle();
   timer.handle();
@@ -94,7 +91,6 @@ void setupOTA()
   ArduinoOTA.begin();
 }
 
-
 void twoSecondsLoop()
 {
   IPAddress ip = WiFi.localIP();
@@ -115,7 +111,8 @@ void twoSecondsLoop()
   float hi = dht.computeHeatIndex(t, h, false);
 
   // Check if any reads failed and exit early (to try again).
-  if (isnan(h) || isnan(t) || isnan(f)) {
+  if (isnan(h) || isnan(t) || isnan(f))
+  {
     Serial.println("Failed to read from DHT sensor!");
     return;
   }
@@ -130,7 +127,6 @@ void twoSecondsLoop()
   Serial.print("Heat index: ");
   Serial.print(hi);
   Serial.println(" *C");
-
 
   int currY = 60;
   centerHorizontalOverWriteExt("Humidity(%):", currY, 2, ST77XX_WHITE);
@@ -156,49 +152,52 @@ void twoSecondsLoop()
   overWrite("Heat: ");
   tft.print(hi);
   tft.println("C");
-  
 }
 
 // Center text helper methods
 
-void centerHorizontal(const String &buf, uint16_t y) {
+void centerHorizontal(const String &buf, uint16_t y)
+{
   int16_t x1, y1;
   static uint16_t size[2] = {0, 0};
-  tft.getTextBounds(buf, 0, 0, &x1, &y1, &size[0], &size[1]); //calc width of new string
+  tft.getTextBounds(buf, 0, 0, &x1, &y1, &size[0], &size[1]); // calc width of new string
   tft.setCursor((SCREEN_WIDTH / 2) - size[0] / 2, y);
   tft.print(buf);
 }
-void centerHorizontalExt(const String &buf, uint16_t y, uint8_t size, uint16_t color) {
+void centerHorizontalExt(const String &buf, uint16_t y, uint8_t size, uint16_t color)
+{
   tft.setTextColor(color);
   tft.setTextSize(size);
   centerHorizontal(buf, y);
 }
-void centerHorizontalOverWrite(const String &buf, uint16_t y) {
+void centerHorizontalOverWrite(const String &buf, uint16_t y)
+{
   int16_t x1, y1;
   static uint16_t size[2] = {0, 0};
-  tft.getTextBounds(buf, 0, 0, &x1, &y1, &size[0], &size[1]); //calc width of new string
-  tft.fillRect (0, y, SCREEN_WIDTH, size[1], BACKGROUND_COLOR);
+  tft.getTextBounds(buf, 0, 0, &x1, &y1, &size[0], &size[1]); // calc width of new string
+  tft.fillRect(0, y, SCREEN_WIDTH, size[1], BACKGROUND_COLOR);
   tft.setCursor((SCREEN_WIDTH / 2) - size[0] / 2, y);
   tft.print(buf);
 }
-void centerHorizontalOverWriteExt(const String &buf, uint16_t y, uint8_t size, uint16_t color) {
+void centerHorizontalOverWriteExt(const String &buf, uint16_t y, uint8_t size, uint16_t color)
+{
   tft.setTextColor(color);
   tft.setTextSize(size);
   centerHorizontalOverWrite(buf, y);
 }
-void overWriteExt(const String &buf, uint16_t x, uint16_t y) {
+void overWriteExt(const String &buf, uint16_t x, uint16_t y)
+{
   tft.setCursor(x, y);
   overWrite(buf);
 }
-void overWrite(const String &buf) {
+void overWrite(const String &buf)
+{
   int16_t x1, y1;
   static uint16_t size[2] = {0, 0};
-  tft.getTextBounds(buf, 0, 0, &x1, &y1, &size[0], &size[1]); //calc width of new string
-  tft.fillRect (0, tft.getCursorY(), SCREEN_WIDTH, size[1], BACKGROUND_COLOR);
+  tft.getTextBounds(buf, 0, 0, &x1, &y1, &size[0], &size[1]); // calc width of new string
+  tft.fillRect(0, tft.getCursorY(), SCREEN_WIDTH, size[1], BACKGROUND_COLOR);
   tft.print(buf);
 }
-
-
 
 void setupWifi()
 {
@@ -208,13 +207,13 @@ void setupWifi()
   if (WiFi.waitForConnectResult() != WL_CONNECTED)
   {
     Serial.println("Connection Failed! No OTA Possible...");
-    overWriteExt("Connection Failed! No OTA Possible...",10, 210);
+    overWriteExt("Connection Failed! No OTA Possible...", 10, 210);
     return;
   }
 }
 
-
-void printWifiStatus() {
+void printWifiStatus()
+{
   // print the SSID of the network you're attached to:
   Serial.print("SSID: ");
   Serial.println(WiFi.SSID());
@@ -259,7 +258,7 @@ void setupMQTT()
   mqttDebugLog("MQTT connect Done");
   centerHorizontalOverWriteExt("MQTT connected", 30, 2, ST77XX_YELLOW);
 
-  mqttDebugLog( String(WiFi.localIP()));
+  mqttDebugLog(String(WiFi.localIP()));
 }
 
 void reconnectWifi()
@@ -277,10 +276,13 @@ void mqttReconnect()
 {
   // Loop until we're reconnected (max 3 tries)
   int tries = 0;
-  if(client.connected()){
-          centerHorizontalOverWriteExt("MQTT connected", 30, 2, ST77XX_YELLOW);
-  }else {
-          centerHorizontalOverWriteExt("MQTT not conn", 30, 2, ST77XX_YELLOW);
+  if (client.connected())
+  {
+    centerHorizontalOverWriteExt("MQTT connected", 30, 2, ST77XX_YELLOW);
+  }
+  else
+  {
+    centerHorizontalOverWriteExt("MQTT not conn", 30, 2, ST77XX_YELLOW);
   }
   while (!client.connected() && tries++ < 1)
   {
@@ -313,13 +315,13 @@ void mqttDebugLog(String msg)
   client.publish(mqqt_debug_topic.c_str(), msg.c_str());
 }
 
-
-
-void callback(char* topic, byte* payload, unsigned int length) {
+void callback(char *topic, byte *payload, unsigned int length)
+{
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
-  for (int i=0;i<length;i++) {
+  for (int i = 0; i < length; i++)
+  {
     Serial.print((char)payload[i]);
   }
   Serial.println();
