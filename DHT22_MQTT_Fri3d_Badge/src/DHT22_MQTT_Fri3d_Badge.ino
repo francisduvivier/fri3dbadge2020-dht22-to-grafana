@@ -33,25 +33,85 @@ const int16_t BACKGROUND_COLOR = ST77XX_BLACK;
 #define concat(first, second) first second
 #define IR_PIN 25
 const String mqqt_debug_topic = concat(feedPrefix, "debug");
+unsigned long startTime;
+bool firstCycleCompleted = false;
+struct HTValues
+{
+  float humidity;
+  float temperature;
+};
+void setTop(uint16_t color)
+{
+  int thickness = 0;
+  for (int row = 0; row < 2; row++)
+  {
+    for (int col = 0; col < SCREEN_WIDTH; col++)
+    {
+      tft.drawPixel(col, row, color);
+    }
+  }
+}
+uint16_t redColor = tft.color565(255, 0, 0);   // Define the color red
+uint16_t greenColor = tft.color565(0, 255, 0); // Define the color red
+uint16_t blueColor = tft.color565(0, 0, 255); // Define the color red
+uint16_t purpleColor = tft.color565(255, 0, 255); // Define the color red
 
 void setup(void)
 {
   Serial.begin(115200);
   setupTFT();
-  setupDHT();
-  setupWifi();
-  setupMQTT();
-  setupOTA();
-  printWifiStatus();
-  setupTimer();
-
   tft.fillScreen(BACKGROUND_COLOR);
+  setTop(blueColor);
+  setupDHT();
+  setTop(blueColor);
+  updateScreen();
+  setupWifi();
+  setTop(blueColor);
+  setupMQTT();
+  setTop(blueColor);
+  setupOTA();
+  setTop(blueColor);
+  printWifiStatus();
+  setTop(blueColor);
+  setupTimer();
+  startTime = millis();
+  tft.fillScreen(BACKGROUND_COLOR);
+  twoSecondsLoop();
 }
 void loop()
 {
+  setTop(redColor);
   reconnectWifi();
-  ArduinoOTA.handle();
-  timer.handle();
+  if (!firstCycleCompleted)
+  {
+    ArduinoOTA.handle();
+    timer.handle();
+    setTop(redColor);
+    if (millis() - startTime > 1000)
+    { // 1 minute in milliseconds
+      firstCycleCompleted = true;
+      // Perform any necessary actions before sleep
+
+      // Enter deep sleep for 1 minute
+      timer.cancelAll();
+      setTop(greenColor);
+      ESP.deepSleep(60e6); // Time in microseconds
+    }
+  }
+  else
+  {
+    // Perform actions for subsequent cycles if needed
+    if (!client.connected())
+    {
+      setTop(purpleColor);
+      mqttReconnect();
+      setTop(redColor);
+    }
+    twoSecondsLoop();
+    // Then sleep again for 1 minute
+    setTop(greenColor);
+    ESP.deepSleep(60e6);
+  }
 }
 void setupTFT()
 {
@@ -88,7 +148,7 @@ void setupOTA()
   ArduinoOTA.begin();
 }
 
-void twoSecondsLoop()
+HTValues updateScreen()
 {
   IPAddress ip = WiFi.localIP();
   Serial.print("IP Address: ");
@@ -107,11 +167,14 @@ void twoSecondsLoop()
   // Compute heat index
   float hi = dht.computeHeatIndex(t, h, false);
 
+  HTValues values;
+  values.humidity = h;
+  values.temperature = t;
   // Check if any reads failed and exit early (to try again).
   if (isnan(h) || isnan(t) || isnan(f))
   {
     Serial.println("Failed to read from DHT sensor!");
-    return;
+    return values;
   }
   Serial.print("Humidity: ");
   Serial.print(h);
@@ -130,7 +193,6 @@ void twoSecondsLoop()
 
   currY += 30;
   centerHorizontalOverWriteExt(String(h), currY, 8, ST77XX_WHITE);
-  client.publish(String("fri3dbadge1/dht22/humidity").c_str(), String(h).c_str());
 
   tft.setTextSize(2);
   currY = 190;
@@ -142,13 +204,21 @@ void twoSecondsLoop()
   overWrite("Temp: ");
   tft.print(t);
   tft.print("C ");
-  client.publish("fri3dbadge1/dht22/temp", String(t).c_str());
 
   currY += 30;
   tft.setCursor(currX, currY);
   overWrite("Heat: ");
   tft.print(hi);
   tft.println("C");
+
+  return values;
+}
+
+void twoSecondsLoop()
+{
+  HTValues sensorValues = updateScreen();
+  client.publish(String("fri3dbadge1/dht22/humidity").c_str(), String(sensorValues.humidity).c_str());
+  client.publish("fri3dbadge1/dht22/temp", String(sensorValues.temperature).c_str());
 }
 
 // Center text helper methods
