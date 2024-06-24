@@ -1,3 +1,6 @@
+# 1 "/tmp/tmpzu810tsp"
+#include <Arduino.h>
+# 1 "/home/fduvivier/psnl/gitProjects/fri3dbadge2020-dht22-to-grafana/DHT22_MQTT_Fri3d_Badge/src/DHT22_MQTT_Fri3d_Badge.ino"
 #include <WiFi.h>
 #include <SPI.h>
 #include <ArduinoOTA.h>
@@ -12,9 +15,9 @@
 #define MSG_BUFFER_SIZE (50)
 
 AsyncTimer timer;
-// Wifi Settings
-char ssid[] = SECRET_SSID; // your network SSID (name)
-char pass[] = SECRET_PASS; // your network password
+
+char ssid[] = SECRET_SSID;
+char pass[] = SECRET_PASS;
 WiFiClient wifiClient;
 
 PubSubClient client(wifiClient);
@@ -23,14 +26,14 @@ int status = WL_IDLE_STATUS;
 
 Badge2020_TFT tft;
 
-#define DHT_PIN 27     // what pin we're connected to
-#define DHT_TYPE DHT22 // DHT 22  (AM2302)
+#define DHT_PIN 27
+#define DHT_TYPE DHT22
 DHT dht(DHT_PIN, DHT_TYPE);
 const int16_t SCREEN_WIDTH = 240;
 const int16_t SCREEN_HEIGHT = 240;
 const int16_t BACKGROUND_COLOR = ST77XX_BLACK;
 #define feedPrefix "fri3dbadge_fd"
-#define concat(first, second) first second
+#define concat(first,second) first second
 #define IR_PIN 25
 const String mqqt_debug_topic = concat(feedPrefix, "debug");
 unsigned long startTime;
@@ -40,6 +43,29 @@ struct HTValues
   float humidity;
   float temperature;
 };
+void setTop(uint16_t color);
+void setup(void);
+void loop();
+void setupTFT();
+void setupDHT();
+void setupOTA();
+HTValues updateScreen();
+void twoSecondsLoop();
+void centerHorizontal(const String &buf, uint16_t y);
+void centerHorizontalExt(const String &buf, uint16_t y, uint8_t size, uint16_t color);
+void centerHorizontalOverWrite(const String &buf, uint16_t y);
+void centerHorizontalOverWriteExt(const String &buf, uint16_t y, uint8_t size, uint16_t color);
+void overWriteExt(const String &buf, uint16_t x, uint16_t y);
+void overWrite(const String &buf);
+void setupWifi();
+void printWifiStatus();
+void setupTimer();
+void setupMQTT();
+void reconnectWifi();
+void mqttReconnect();
+void mqttDebugLog(String msg);
+void callback(char *topic, byte *payload, unsigned int length);
+#line 43 "/home/fduvivier/psnl/gitProjects/fri3dbadge2020-dht22-to-grafana/DHT22_MQTT_Fri3d_Badge/src/DHT22_MQTT_Fri3d_Badge.ino"
 void setTop(uint16_t color)
 {
   int thickness = 0;
@@ -51,10 +77,10 @@ void setTop(uint16_t color)
     }
   }
 }
-uint16_t redColor = tft.color565(255, 0, 0);   // Define the color red
-uint16_t greenColor = tft.color565(0, 255, 0); // Define the color red
-uint16_t blueColor = tft.color565(0, 0, 255); // Define the color red
-uint16_t purpleColor = tft.color565(255, 0, 255); // Define the color red
+uint16_t redColor = tft.color565(255, 0, 0);
+uint16_t greenColor = tft.color565(0, 255, 0);
+uint16_t blueColor = tft.color565(0, 0, 255);
+uint16_t purpleColor = tft.color565(255, 0, 255);
 
 void setup(void)
 {
@@ -88,19 +114,19 @@ void loop()
     timer.handle();
     setTop(redColor);
     if (millis() - startTime > 1000)
-    { // 1 minute in milliseconds
+    {
       firstCycleCompleted = true;
-      // Perform any necessary actions before sleep
 
-      // Enter deep sleep for 1 minute
-      // timer.cancelAll();
+
+
+
       setTop(greenColor);
-      // ESP.deepSleep(60e6); // Time in microseconds
+
     }
   }
   else
   {
-    // Perform actions for subsequent cycles if needed
+
     if (!client.connected())
     {
       setTop(purpleColor);
@@ -108,9 +134,9 @@ void loop()
       setTop(redColor);
     }
     twoSecondsLoop();
-    // Then sleep again for 1 minute
+
     setTop(greenColor);
-    // ESP.deepSleep(60e6);
+
   }
 }
 void setupTFT()
@@ -157,20 +183,20 @@ HTValues updateScreen()
   tft.println(ip);
 
   Serial.println("Before DHT Read!");
-  // Reading temperature or humidity takes about 250 milliseconds!
-  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+
+
   float h = dht.readHumidity();
-  // Read temperature as Celsius
+
   float t = dht.readTemperature();
-  // Read temperature as Fahrenheit
+
   float f = dht.readTemperature(true);
-  // Compute heat index
+
   float hi = dht.computeHeatIndex(t, h, false);
 
   HTValues values;
   values.humidity = h;
   values.temperature = t;
-  // Check if any reads failed and exit early (to try again).
+
   if (isnan(h) || isnan(t) || isnan(f))
   {
     Serial.println("Failed to read from DHT sensor!");
@@ -221,13 +247,13 @@ void twoSecondsLoop()
   client.publish("fri3dbadge1/dht22/temp", String(sensorValues.temperature).c_str());
 }
 
-// Center text helper methods
+
 
 void centerHorizontal(const String &buf, uint16_t y)
 {
   int16_t x1, y1;
   static uint16_t size[2] = {0, 0};
-  tft.getTextBounds(buf, 0, 0, &x1, &y1, &size[0], &size[1]); // calc width of new string
+  tft.getTextBounds(buf, 0, 0, &x1, &y1, &size[0], &size[1]);
   tft.setCursor((SCREEN_WIDTH / 2) - size[0] / 2, y);
   tft.print(buf);
 }
@@ -241,7 +267,7 @@ void centerHorizontalOverWrite(const String &buf, uint16_t y)
 {
   int16_t x1, y1;
   static uint16_t size[2] = {0, 0};
-  tft.getTextBounds(buf, 0, 0, &x1, &y1, &size[0], &size[1]); // calc width of new string
+  tft.getTextBounds(buf, 0, 0, &x1, &y1, &size[0], &size[1]);
   tft.fillRect(0, y, SCREEN_WIDTH, size[1], BACKGROUND_COLOR);
   tft.setCursor((SCREEN_WIDTH / 2) - size[0] / 2, y);
   tft.print(buf);
@@ -261,7 +287,7 @@ void overWrite(const String &buf)
 {
   int16_t x1, y1;
   static uint16_t size[2] = {0, 0};
-  tft.getTextBounds(buf, 0, 0, &x1, &y1, &size[0], &size[1]); // calc width of new string
+  tft.getTextBounds(buf, 0, 0, &x1, &y1, &size[0], &size[1]);
   tft.fillRect(0, tft.getCursorY(), SCREEN_WIDTH, size[1], BACKGROUND_COLOR);
   tft.print(buf);
 }
@@ -281,19 +307,19 @@ void setupWifi()
 
 void printWifiStatus()
 {
-  // print the SSID of the network you're attached to:
+
   Serial.print("SSID: ");
   Serial.println(WiFi.SSID());
   overWriteExt("SSID: ", 10, 100);
   tft.println(WiFi.SSID());
-  // print your WiFi shield's IP address:
+
   IPAddress ip = WiFi.localIP();
   Serial.print("IP Address: ");
   Serial.println(ip);
   overWriteExt("IP Address: ", 10, 130);
   tft.println(ip);
 
-  // print the received signal strength:
+
   long rssi = WiFi.RSSI();
   Serial.print("signal strength (RSSI):");
   Serial.print(rssi);
@@ -329,7 +355,7 @@ void setupMQTT()
 
 void reconnectWifi()
 {
-  // if WiFi is down, try reconnecting
+
   if (WiFi.status() != WL_CONNECTED)
   {
     Serial.print(millis());
@@ -340,7 +366,7 @@ void reconnectWifi()
 }
 void mqttReconnect()
 {
-  // Loop until we're reconnected (max 3 tries)
+
   int tries = 0;
   if (client.connected())
   {
@@ -353,12 +379,12 @@ void mqttReconnect()
   while (!client.connected() && tries++ < 1)
   {
     Serial.print("Attempting MQTT connection...");
-    // Create a random client ID
+
     String clientId = "ESP32Client-Fri3d-Badge";
-    // Attempt to connect
+
     if (client.connect(clientId.c_str()))
     {
-      // Once connected, publish an announcement...
+
       mqttDebugLog("connected");
       centerHorizontalOverWriteExt("MQTT connected", 30, 2, ST77XX_YELLOW);
     }
@@ -368,7 +394,7 @@ void mqttReconnect()
       Serial.print("failed, rc=");
       Serial.print(client.state());
       Serial.println("try again in 500 millis");
-      // Wait 5 seconds before retrying
+
       delay(500);
     }
   }
